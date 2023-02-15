@@ -6,55 +6,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<style>
-    a {
-        text-decoration:none;
-    }
-    .busket {
-        background: yellow;
-    }
-    #cost {
-        margin-left: 2px;
-        background: purple;
-        color: white;
-    }
-
-    .red {
-        background: red;
-        color: white;
-    }
-</style>
 <body>
     <?php
-        session_start();
-        $goods = [
+        $goods = 
+        [
             [
+                'name' => 'Apple',
+                'cost' => 30,
                 'id' => 1,
-                'Name' => 'Axe',
-                'Cost' => 50,
-                'Count' => '38',
+                'count' => 0,
             ],
             [
-                'id' => 2,
-                'Name' => 'Hammer',
-                'Cost' => 40,
-                'Count' => '58',
-            ],
-            [   
-                'id' => 3,
-                'Name' => 'Screwdriver',
-                'Cost' => 10,
-                'Count' => '98',
+                'name' => 'Orange',
+                'cost' => 20,
+                'id' => 1,
+                'count' => 0,
             ],
             [
-                'id' => 4,
-                'Name' => 'Nails',
-                'Cost' => 1,
-                'Count' => '800',
+                'name' => 'Banana',
+                'cost' => 30,
+                'id' => 1,
+                'count' => 0,
             ]
         ];
-    ?>
-
+     ?>
+     <table>
+        <tbody>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Cost
+                </th>
+                <th>
+                    Count
+                </th>
+            </tr>
+            <?php 
+                session_start();
+                if($_GET['remove'] == true) {
+                    session_unset();
+                }
+                foreach($goods as $item){
+                $i++;
+            ?>
+            <tr>
+                <td><?= "<a href='?good_id=" . $i . "'>" . $item['name'] . "</a>" ?></td>
+                <td><?= $item['cost'] ?></td>
+                <?php
+                    if ($_GET['good_id'] == $i) {
+                        $busket = [
+                            [
+                                'name' => $item['name'],
+                                'cost' => $item['cost'],
+                                'id' => $i,
+                                'count' => 0,
+                            ],
+                        ];
+                        $_SESSION['busket'][] = $busket;
+                        }
+                    }
+                    var_dump($_SESSION['busket']);
+                ?>
+                <td><?= '<input type="number" name="input">' ?>
+            </tr>
+        </tbody>
+     </table>
+            <?php
+            echo '<a href = "?remove=true">Удалить сессию</a>';
+            ?>
     <table>
         <tbody>
             <tr>
@@ -69,85 +90,25 @@
                 </th>
             </tr>
             <?php
-                if($_GET['remove'] == true) {
-                    session_unset();
-                } 
-                if($_GET['id'] == true) {
-                    $count++;
-                    $_SESSION['count'] = $_SESSION['count'] + $count;
-                }       
-                $busket = [];
-                foreach ($goods as $item): ?>
-                <tr>
-                    <td><?php $i++; echo "<a href ='?goods=" . $i . "&id=true" . '$idnumber='. $_SESSION['count'] . "'>" . $item["Name"] . "</a>";
-                            ?></td>
-                    <td><p><?= $item["Cost"] ?></td></p>
-                    <td><p><?= $item["Count"] ?></td></p>
-                </tr>
-                
-            <?php 
-            if($_GET['goods'] == $i) {
-                $busket = [
-                    "id" => $item["id"],
-                    'Name' => $item["Name"],
-                    'Cost'=> $item['Cost'],
-                ];
-                array_push($busket, $item["Name"],$item["id"],$item['Cost']);
-                $_SESSION['items'][] = $busket;
-                $_SESSION['Cost'][] = $busket['Cost'];
-            }
-            endforeach;
-            ?>
-            <br>        
-        </tbody>
-    </table>
-
-    <?php 
-    ?>
-
-    <table >
-            
-        <tbody>
-            <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    ID
-                </th>
-                <th>
-                    Cost
-                </th>
-            </tr>
-            <?= 
-                "<a class = 'red' href ='?remove=true'> Очистить корзину </a>" . '<br>';
-                if($_GET['remove'] == true) {
-                session_unset();
-                }  
-
-            ?>
-            <span class = "busket">Busket</span>
-            <?php 
-                
-                if (isset($_SESSION['items'])) {
-                    $length = count($_SESSION['items']);
+                if (isset($_SESSION['busket'])) {
+                    $length = count($_SESSION['busket']);
                 }
-                for ($i = 0; $i < $length; $i++) { 
+                for ($i = 0; $i < $length;$i++) {
             ?>
-                <tr class = "busket">
-                
-                    <td><?= $_SESSION['items'][$i][0];?></td>
-                    <td><?= $_SESSION['items'][$i][1]; ?></td>
-                    <td><?= $_SESSION['items'][$i][2] . "$"; ?></td>
-                    <td><a href="?removeID-" class = "red">Удалить товар </a></td>
-                </tr>
-            <?php 
-                $cost = $cost + $_SESSION['Cost'][$i]; 
-                }; 
-                    echo "<span id = 'cost'>" . "General cost: " . $cost . " $ </span>"; 
-                 ?>
-                 
+            <tr>
+                    <td><?= $_SESSION['busket'][$i][0]['name']?></td>
+                    <td><?= $_SESSION['busket'][$i][0]['cost']?></td>
+                    <td><?= $_SESSION['busket'][$i][0]['count']?></td>
+                    <td><?php echo "<a href='?remove_good=" . $_SESSION['busket'][$i][0]['id'] . "'>Удалить товар</a>";
+                        if ($_GET['remove_good'] == $_SESSION['busket'][$i][0]['id']) {
+                            unset($_SESSION['busket'][$i]);
+                        }
+                    ?></td>
+            </tr>
+            <?php
+                }
+            ?>
         </tbody>
-    </table>
+     </table>
 </body>
 </html>
